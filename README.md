@@ -101,51 +101,51 @@ rabbit-component.js与rabbit的ui分离，可以单独使用，点击下面的�
 rabbit.http模块将ajax请求封装
 ### rabbit.http.get(url,sucCallback,failCallback)
 
-···
+```
       //发送ajax get请求至相应地址，根据结果执行相应的回调函数
       //url: 地址
       //sucCallback: 成功回调（status==200||status==304）
       //failCallback: 失败回调
-···
+```
 
 ### rabbit.http.post(url,formData,sucCallback,failCallback)
 
-···
+```
       //发送ajax post请求至相应地址，根据结果执行相应的回调函数
       //url: 地址
       //formData: 使用FormData传递的数据
       //sucCallback: 成功回调（status==200||status==304）
       //failCallback: 失败回调
-···
+```
 
 ### rabbit.http.patch(url,formData,sucCallback,failCallback)
 
-···
+```
       //发送ajax patch请求至相应地址，根据结果执行相应的回调函数
       //url: 地址
       //formData: 使用FormData传递的数据
       //sucCallback: 成功回调（status==200||status==304）
       //failCallback: 失败回调
-···
+```
 
 ### rabbit.http.put(url,formData,sucCallback,failCallback)
 
-···
+```
       //发送ajax put请求至相应地址，根据结果执行相应的回调函数
       //url: 地址
       //formData: 使用FormData传递的数据
       //sucCallback: 成功回调（status==200||status==304）
       //failCallback: 失败回调
-···
+```
 
 ### rabbit.http.delete(url,formData,sucCallback,failCallback)
 
-···
+```
       //发送ajax delete请求至相应地址，根据结果执行相应的回调函数
       //url: 地址
       //formData: 使用FormData传递的数据
       //sucCallback: 成功回调（status==200||status==304）
       //failCallback: 失败回调
-···
+```
 
 
