@@ -1,10 +1,12 @@
 /*!
- * Rabbit-Component.js v1.1.1
+ * Rabbit-Component.js v1.1.2
  * (c) 2020-2025 Wave Deng
  * Released under the MIT License.
  */
 
 //Global config for rabbit component
+
+
 (function (global, factory) {
     "use strict";
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -869,10 +871,64 @@
     }
 
 
+    //network thing
+    var _http = {};
+
+    _http.get = function (url, successCallback, failCallback) {
+        sendRequest("get", url, null, successCallback, failCallback);
+    }
+
+    _http.post = function (url, formData, successCallback, failCallback) {
+        sendRequest("post", url, formData, successCallback, failCallback);
+    }
+
+    _http.patch = function (url, formData, successCallback, failCallback) {
+        sendRequest("patch", url, formData, successCallback, failCallback);
+    }
+
+
+    _http.delete = function (url, formData, successCallback, failCallback) {
+        sendRequest("delete", url, formData, successCallback, failCallback);
+    }
+
+    _http.put = function (url, formData, successCallback, failCallback) {
+        sendRequest("put", url, formData, successCallback, failCallback);
+    }
+
+
+
+    function sendRequest(method, url, formData, successCallback, failCallback) {
+        var request = new XMLHttpRequest();
+        request.open(method, url, true);
+        request.onreadystatechange = function () {
+            if (request.readyState == 4) {
+                if (request.status == 200 || request.status == 304) {
+                    if (successCallback != undefined) {
+                        successCallback(this.response);
+                    }
+                }
+                else {
+                    if (failCallback != undefined) {
+                        failCallback(JSON.parse(this.response), this.status);
+                    }
+                }
+            }
+        }
+        if (formData) {
+            request.send(formData);
+        }
+    }
+
+
+
+
+
+
 
     if (window.rabbit === undefined) {
         window.rabbit = {};
     }
     window.rabbit.Component = Component;
+    window.rabbit.http = _http;
 
 });
