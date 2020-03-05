@@ -50,7 +50,8 @@ rabbit-component.js与rabbit的ui分离，可以单独使用，点击下面的�
 <a  rabbit-text="passage.title" :href="/series/{{series.id}}/passage/{{passage.id}}"></a>
 ```
 
-##示例
+## 示例
+完整的例子页面在examples中下载
 ``` html
   <div class="example-container flex">
       <div class="rabbit-card passage-example right-10" rabbit-for="passages" rabbit-key="passage" rabbit-index="index">
