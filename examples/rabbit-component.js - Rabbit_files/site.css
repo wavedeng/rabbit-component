@@ -1,0 +1,126 @@
+.main-container {
+  width: 1200px;
+  margin: auto;
+}
+@media screen and (max-device-width: 768px) {
+  .main-container {
+    width: 100%;
+    padding: 5px;
+  }
+}
+#main-navbar {
+  width: 1200px;
+  margin: 0 auto;
+}
+@media screen and (max-device-width: 768px) {
+  #main-navbar {
+    width: 100%;
+  }
+}
+.code {
+  background-color: #eeeeee;
+  padding: 10px;
+  margin: 10px 0;
+}
+.code.important {
+  /*background-color: rgba(255,255,0,0.2);*/
+  color: red;
+}
+.class {
+  background-color: #dddddd;
+  border-radius: 5px;
+  display: inline-block;
+  padding: 0 5px;
+  color: green;
+}
+.fix-top {
+  position: fixed;
+  top: 40px;
+}
+.doc-section {
+  margin: 10px 0;
+  margin-bottom: 40px;
+}
+.doc-section .section-name {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.doc-section .text-section {
+  margin-bottom: 5px;
+  color: #777777;
+}
+.doc-section .section-sub {
+  margin-bottom: 20px;
+}
+.doc-section .section-sub .section-sub-name {
+  margin-bottom: 5px;
+  font-size: 1.8rem;
+}
+.doc-section .example-container {
+  margin: 5px 0;
+  overflow: hidden;
+}
+.line-section {
+  background-color: greenyellow;
+  height: 30px;
+  border-radius: 3px;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+}
+.layout-example .rabbit-container div {
+  height: 30px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.layout-example .rabbit-container div:nth-child(2n) {
+  border: 1px solid #dddddd;
+}
+.layout-example .rabbit-container div:nth-child(2n+1) {
+  background-color: #dddddd;
+}
+.cards-show {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.cards-show .rabbit-card {
+  width: 31%;
+}
+@media screen and (max-device-width: 992px) {
+  .cards-show .rabbit-card {
+    width: 50%;
+  }
+}
+@media screen and (max-device-width: 767px) {
+  .cards-show .rabbit-card {
+    width: 100%;
+  }
+}
+#index-card {
+  width: 100%;
+}
+#index-card .card-header {
+  background-color: orange;
+}
+#index-card .card-tail {
+  /*color:white;*/
+}
+.index-section {
+  height: 600px;
+  overflow: hidden;
+}
+.index-section .col-3 .rabbit-card {
+  width: 100%;
+  height: 100%;
+  box-shadow: none;
+}
+.index-section .col-3 .rabbit-card .card-header .card-cover {
+  transform: scale(1.5);
+}
+footer {
+  background-color: #eeeeee;
+  padding: 40px 20px;
+}
