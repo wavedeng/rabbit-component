@@ -6,7 +6,6 @@
 
 //Global config for rabbit component
 
-
 (function (global, factory) {
     "use strict";
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -14,7 +13,7 @@
             factory(global) :
             function (w) {
                 if (!w.document) {
-                    throw new Error("jQuery requires a window with a document");
+                    throw new Error("rabbit requires a window with a document");
                 }
                 return factory(w);
             }
@@ -84,10 +83,13 @@
                 //execute the original method at first
                 var result = oriMethod.apply(this, args);
 
+
                 //observers of the array
                 var observers = this.observers;
 
-                var deletedItems = [];
+
+
+                var sort = false;
 
                 if (method == "push") {
                     observers.forEach(observer => {
@@ -97,6 +99,7 @@
                             newNodes.push(new TreeNode(node.element.cloneNode(true), _globalConfig.nodeType.item, args[i], node));
                         }
                         oriMethod.apply(observer.target.children, newNodes);
+                        mountNewItemNodes(observer.component, newNodes);
                     });
                 }
                 else if (method == "unshift") {
@@ -107,26 +110,55 @@
                             newNodes.push(new TreeNode(node.element.cloneNode(true), _globalConfig.nodeType.item, args[i], node));
                         }
                         oriMethod.apply(observer.target.children, newNodes);
+                        mountNewItemNodes(observer.component, newNodes);
                     })
                 }
                 else if (method == "splice") {
                     observers.forEach(observer => {
                         let newArgs = [];
+                        let newNodes = [];
                         for (let i = 0, l = args.length; i < l; i++) {
                             if (i > 2) {
                                 let newNode = new TreeNode(node.element.cloneNode(true), _globalConfig.nodeType.item, args[i], node);
                                 newArgs.push(newNode);
+                                newNodes.push(newNode);
                             }
                             else {
                                 newArgs.push(args[i]);
                             }
                         }
-
-                        deletedItems = oriMethod.apply(observer.target.children, newArgs);
+                        mountNewItemNodes(observer.component, newNodes);
+                        deleteItemEles(oriMethod.apply(observer.target.children, newArgs));
                     });
                 }
 
-                updateArrayNodeTree(observers, deletedItems);
+                else if (method == "pop") {
+                    observers.forEach(observer => {
+                        let deletedItems = [];
+                        deletedItems.push(oriMethod.apply(observer.target.children, args));
+                        deleteItemEles(deletedItems);
+                    });
+                }
+                else if (method == "shift") {
+                    observers.forEach(observer => {
+                        let deletedItems = [];
+                        deletedItems.push(oriMethod.apply(observer.target.children, args));
+                        deleteItemEles(deletedItems);
+                    });
+                }
+                else if (method == "sort") {
+                    //sort = true;
+                    observers.forEach(observer => {
+                        oriMethod.apply(observer.target.children, [(child1, child2) => { return args[0].apply(observer.target.children,[child1.model,child2.model]) }]);
+                    });
+                }
+                else if (method == "reverse") {
+                    observers.forEach(observer => {
+                        oriMethod.apply(observer.target.children, args);
+                    });
+                }
+
+                updateArrayNodeTree(observers, sort, this);
                 return result;
             });
 
@@ -135,33 +167,37 @@
     })();
 
 
-
-    //update the array node and render since the model of node has changed
-    function updateArrayNodeTree(observers, deletedItems) {
-
-        //delete the rendered elements from html view
-        if (deletedItems.length > 0) {
-            deleteElements(deletedItems);
-        }
+    function deleteItemEles(nodes) {
+        nodes.forEach(node => {
+            node.element.parentElement.removeChild(node.element);
+        });
+    }
 
 
-        //mount the item node and render the array tree
-        observers.forEach(observer => {
-            let children = observer.target.children;
 
-            for (let i = 0, l = children.length; i < l; i++) {
-                children[i].itemIndex = i;
-            }
-            children.forEach(node => {
-                observer.component.mountBunch(node);
-            });
-            observer.component.renderBunch(observer.target);
+    function mountNewItemNodes(component, newNodes) {
+        newNodes.forEach(node => {
+            component.mountBunch(node);
+            component.renderBunch(node);
         });
     }
 
 
 
 
+    //update the array node and render since the model of node has changed
+    function updateArrayNodeTree(observers, sort, array) {
+
+        //mount the item node and render the array tree
+        observers.forEach(observer => {
+            let children = observer.target.children;
+            for (let i = 0, l = children.length; i < l; i++) {
+                children[i].itemIndex = i;
+            }
+            observer.component.sortItemNodes(observer.target);
+        });
+
+    }
 
 
     //Component
@@ -431,6 +467,13 @@
 
     }
 
+
+    Component.prototype.sortItemNodes = function (node) {
+        node.children.forEach(child => {
+            node.parentElement.insertBefore(child.element, node.refElement);
+        });
+    }
+
     //hang the array node
     Component.prototype.hangArrayNode = function (parentNode, element) {
         var node = new TreeNode(element, _globalConfig.nodeType.array, null, parentNode);
@@ -452,6 +495,12 @@
         //remove the rabbit-array attribue from the element
         element.removeAttribute(_globalConfig.nodeTypeAttribue[2]);
         node.parentElement = element.parentElement;
+        var refElement = document.createElement("p");
+        refElement.style.display = "none";
+        refElement.classList.add("rabbit-reference");
+        node.parentElement.insertBefore(refElement, element);
+
+        node.refElement = refElement;
         node.parentElement.removeChild(element);
 
         parentNode.children.push(node);
@@ -531,7 +580,8 @@
 
         //if item node, add the element to the parent element
         else if (node.type == _globalConfig.nodeType.item) {
-            node.parent.parentElement.appendChild(node.element);
+            node.parent.parentElement.insertBefore(node.element, node.refElement);
+            //node.parent.parentElement.appendChild(node.element);
         }
 
         this.renderAttributes(node);
@@ -871,6 +921,10 @@
     }
 
 
+    //insert the element after a specific element
+
+
+
     //network thing
     var _http = {};
 
@@ -918,8 +972,6 @@
             request.send(formData);
         }
     }
-
-
 
 
 
