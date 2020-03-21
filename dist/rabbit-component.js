@@ -149,7 +149,7 @@
                 else if (method == "sort") {
                     //sort = true;
                     observers.forEach(observer => {
-                        oriMethod.apply(observer.target.children, [(child1, child2) => { return args[0].apply(observer.target.children,[child1.model,child2.model]) }]);
+                        oriMethod.apply(observer.target.children, [(child1, child2) => { return args[0].apply(observer.target.children, [child1.model, child2.model]) }]);
                     });
                 }
                 else if (method == "reverse") {
@@ -530,7 +530,7 @@
             console.error("your +class " + addClaValue + " must have something wrong");
         }
 
-        var classer = new RabbitClasser(null, null, strap(addClaConfig[2]), strap(addClaConfig[3]));
+        var classer = new RabbitClasser(null, null, strap(addClaConfig[2]), strap(addClaConfig[3]),node);
         var compare1 = new RabbitData(null, classer);
         this.setWatcher(node, addClaConfig[0], compare1);
 
@@ -542,7 +542,15 @@
             compare2.model = strap(compare2String);
         }
         else {
-            this.setWatcher(node, compare2String, compare2);
+            if (compare2String == "true") {
+                compare2.model = true;
+            }
+            else if (compare2String == "false") {
+                compare2.model = false;
+            }
+            else {
+                this.setWatcher(node, compare2String, compare2);
+            }
         }
 
         classer.compare1 = compare1;
@@ -690,7 +698,7 @@
 
 
         if (obj instanceof IfController) {
-            obj.node.active = !!model;
+            obj.node.active = obj.reverse ? !!!model : !!model;
         }
 
         return model;
@@ -795,12 +803,18 @@
 
                     //if ifController set the active
                     else if (target instanceof IfController) {
-                        target.run(newVal);
+                        target.run(newVal, observer.component);
                     }
 
                     else if (target instanceof RabbitAttribute) {
                         component.renderAttributes(target.node);
                     }
+
+                    //add class thing
+                    else if (target.target instanceof RabbitClasser) {
+                        component.renderAttributes(target.target.node);
+                    }
+
 
                 });
 
@@ -846,7 +860,7 @@
         this.reverse = reverse;
     }
 
-    IfController.prototype.run = function (newVal) {
+    IfController.prototype.run = function (newVal,component) {
         var activeNow = this.reverse ? !!!newVal : !!newVal;
         if (activeNow != this.node.active) {
             this.node.active = activeNow;
@@ -872,11 +886,12 @@
     }
 
 
-    function RabbitClasser(compare1, compare2, class1, class2) {
+    function RabbitClasser(compare1, compare2, class1, class2,node) {
         this.compare1 = compare1;
         this.compare2 = compare2;
         this.class1 = class1;
         this.class2 = class2;
+        this.node = node;
     }
 
     function RabbitData(model, target) {
@@ -958,12 +973,12 @@
             if (request.readyState == 4) {
                 if (request.status == 200 || request.status == 304) {
                     if (successCallback != undefined) {
-                        successCallback(this.response);
+                        successCallback(JSON.parse(this.response));
                     }
                 }
                 else {
                     if (failCallback != undefined) {
-                        failCallback(JSON.parse(this.response), this.status);
+                        failCallback(this.response, this.status);
                     }
                 }
             }
@@ -971,6 +986,9 @@
         if (formData) {
             request.send(formData);
         }
+        else {
+            request.send();
+       }
     }
 
 
